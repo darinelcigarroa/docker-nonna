@@ -1,0 +1,104 @@
+networks:
+  project-network:
+    driver: bridge
+
+volumes:
+  pg_data:
+  backup_data:
+
+services:
+  postgres-nonna:
+    image: postgres:13.3-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - backup_data:/tmp/backup
+    networks:
+      - project-network
+    ports:
+      - "5432:5432"
+    mem_limit: 1000M
+    cpus: '2.5'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  pgadmin-nonna:
+    image: dpage/pgadmin4
+    networks:
+      - project-network
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_LISTEN_PORT: "81"
+    ports:
+      - "81:81"
+    volumes:
+      - ./database/backup:/var/lib/pgadmin/storage
+    mem_limit: 1000M
+    cpus: '1.5'
+    restart: unless-stopped
+    depends_on:
+      postgres-nonna:
+        condition: service_healthy
+
+  backend-nona:
+    build:
+      context: ./
+      dockerfile: ./docker/php.Dockerfile
+      args:
+         USER: ${USER}
+         UID: ${UID:-1000}
+    networks:
+        - project-network
+    volumes:
+        - ./backend-nonna:/var/www
+        - ./.docker/docker/php.ini:/usr/local/etc/php/php.ini
+        - ./docs:/usr/share/docs
+        - ./.docker/docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    mem_limit: 3000M
+    cpus: '2.0'
+    restart: unless-stopped
+
+  frontend-nona:
+    build:
+      context: ./
+      dockerfile: ./docker/nodeJs.DockerFile
+      args:
+        USER: ${USER}
+        UID: ${UID:-1000}
+    networks:
+      - project-network
+    ports:
+      - "9000:9000"
+      - "4040:4040"
+    volumes:
+      - ./frontend-nonna:/usr/src/app
+      - /usr/src/app/node_modules
+      - ./docs:/usr/share/docs
+    mem_limit: 6500M
+    cpus: '5'
+    restart: unless-stopped
+
+  nginx-app:
+    image: nginx:alpine 
+    volumes:
+      - ./backend-nonna:/var/www
+      - ./.docker/docker/app.conf:/etc/nginx/conf.d/app.conf
+    ports:
+        - "80:80"
+        - "82:82"
+        - "83:83"
+        - "84:84"
+        - "85:85"
+    networks:
+      - project-network
+    restart: unless-stopped
