@@ -8,11 +8,11 @@ volumes:
 
 services:
   postgres-nonna:
-    image: postgres:13.3-alpine
+    image: postgres:17.3-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
     volumes:
       - pg_data:/var/lib/postgresql/data
       - backup_data:/tmp/backup
@@ -20,23 +20,15 @@ services:
       - project-network
     ports:
       - "5432:5432"
-    mem_limit: 1000M
-    cpus: '2.5'
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      retries: 5
-      timeout: 5s
 
   pgadmin-nonna:
     image: dpage/pgadmin4
     networks:
       - project-network
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-      PGADMIN_LISTEN_PORT: "81"
+        PGADMIN_DEFAULT_EMAIL: "algo@gmail.com"
+        PGADMIN_DEFAULT_PASSWORD: root
+        PGADMIN_LISTEN_PORT: "81"
     ports:
       - "81:81"
     volumes:
@@ -45,8 +37,7 @@ services:
     cpus: '1.5'
     restart: unless-stopped
     depends_on:
-      postgres-nonna:
-        condition: service_healthy
+      - postgres-nonna
 
   backend-nona:
     build:
@@ -84,9 +75,6 @@ services:
       - ./frontend-nonna:/usr/src/app
       - /usr/src/app/node_modules
       - ./docs:/usr/share/docs
-    mem_limit: 6500M
-    cpus: '5'
-    restart: unless-stopped
 
   nginx-app:
     image: nginx:alpine 
@@ -101,4 +89,3 @@ services:
         - "85:85"
     networks:
       - project-network
-    restart: unless-stopped

@@ -1,0 +1,15 @@
+.devcontainer
+
+backend-nonna/*
+!backend-nonna/.gitkeep
+
+frontend-nonna/*
+!frontend-nonna/.gitkeep
+
+.vscode/*
+
+database/*
+!database/.gitkeep
+database/backup
+!database/backup/.gitkeep
+.pnotes/
