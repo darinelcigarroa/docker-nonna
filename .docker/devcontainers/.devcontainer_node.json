@@ -1,0 +1,25 @@
+{
+	"name": "frontend-app",
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	"service": "frontend-app",
+	"shutdownAction": "none",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"octref.vetur",
+				"dbaeumer.vscode-eslint",
+				"WallabyJs.quokka-vscode",
+				"Zignd.html-css-class-completion",
+				"WallabyJs.console-ninja"
+			],
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/zsh",
+				"terminal.integrated.defaultProfile.linux": "zsh"
+			}
+		} 
+	},
+	"workspaceFolder": "/usr/src/app",
+	"postCreateCommand": "sh setup.sh"
+}

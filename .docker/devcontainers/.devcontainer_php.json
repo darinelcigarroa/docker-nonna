@@ -1,0 +1,24 @@
+{
+	"name": "project-app",
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	"service": "project-app",
+	"shutdownAction": "none",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"bmewburn.vscode-intelephense-client",
+				"xdebug.php-debug",
+				"carlboo.tinker-this"
+			],
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/zsh",
+				"terminal.integrated.defaultProfile.linux": "zsh"
+			}
+		}
+	},
+	"workspaceFolder": "/var/www",
+	"postCreateCommand": "sh setup.sh"
+}
+
