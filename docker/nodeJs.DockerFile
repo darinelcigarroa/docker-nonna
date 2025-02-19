@@ -1,5 +1,5 @@
 # Use the official Node.js 20.x Alpine image
-FROM node:23.8.0-alpine3.20
+FROM node:20-alpine
 # Aceptar argumentos de nombre de usuario y UID
 ARG USER
 ARG UID
