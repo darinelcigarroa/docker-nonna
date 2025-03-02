@@ -1,16 +1,24 @@
 {
-	"name": "project-app",
+	"name": "backend-nona",
 	"dockerComposeFile": [
 		"../docker-compose.yml"
 	],
-	"service": "project-app",
+	"service": "backend-nona",
 	"shutdownAction": "none",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"bmewburn.vscode-intelephense-client",
 				"xdebug.php-debug",
-				"carlboo.tinker-this"
+				"carlboo.tinker-this",
+				"mohamedbenhida.laravel-intellisense",
+				"MehediDracula.php-namespace-resolver",
+				"alefragnani.Bookmarks",
+				"donjayamanne.githistory",
+				"GitHub.copilot",
+				"eamodio.gitlens",
+				"benjaminadk.emojis4git",
+				"codingyu.laravel-goto-view"
 			],
 			"settings": {
 				"terminal.integrated.shell.linux": "/bin/zsh",
